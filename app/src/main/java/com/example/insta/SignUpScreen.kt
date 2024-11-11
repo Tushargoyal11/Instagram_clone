@@ -7,18 +7,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.insta.databinding.ActivitySignUpScreenBinding
+import com.example.insta.models.User
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 
 class SignUpScreen : AppCompatActivity() {
 
     val binding by lazy{
         ActivitySignUpScreenBinding.inflate(layoutInflater)
     }
-
+    lateinit var user: User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
+        user=User()
 //      setContentView(R.layout.activity_sign_up_screen)
         binding.signUpBtn.setOnClickListener{
             if(binding.signupname.editText?.text.toString().equals("") or
@@ -35,6 +40,10 @@ class SignUpScreen : AppCompatActivity() {
                     result->
                     if(result.isSuccessful){
                         Toast.makeText(this@SignUpScreen,"Successfully Registered",Toast.LENGTH_SHORT).show()
+                        user.name=binding.signupname.editText?.text.toString()
+                        user.email=binding.signupemail.editText?.text.toString()
+                        user.password=binding.signuppassword.editText?.text.toString()
+                        Firebase.firestore.collection("Users").document(Firebase.auth.currentUser!!.uid).set(user)
                     }
                     else{
                         Toast.makeText(this@SignUpScreen, result.exception?.localizedMessage,Toast.LENGTH_SHORT).show()
