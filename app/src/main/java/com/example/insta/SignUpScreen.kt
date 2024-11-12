@@ -3,6 +3,7 @@ package com.example.insta
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -19,6 +20,12 @@ class SignUpScreen : AppCompatActivity() {
         ActivitySignUpScreenBinding.inflate(layoutInflater)
     }
     lateinit var user: User
+    private val launcher=registerForActivityResult(ActivityResultContracts.GetContent()){
+        uri->
+        uri?.let{
+
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
