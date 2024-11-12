@@ -1,5 +1,6 @@
 package com.example.insta
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -9,6 +10,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.insta.databinding.ActivitySignUpScreenBinding
 import com.example.insta.models.User
+import com.example.insta.utils.USER_NODE
+import com.example.insta.utils.USER_PROFILE_FOLDER
+import com.example.insta.utils.uploadImage
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -23,7 +27,15 @@ class SignUpScreen : AppCompatActivity() {
     private val launcher=registerForActivityResult(ActivityResultContracts.GetContent()){
         uri->
         uri?.let{
+            uploadImage(uri, USER_PROFILE_FOLDER){
+                if(it==null){
 
+                }
+                else{
+                    user.image=it
+                    binding.profileImage.setImageURI(uri)
+                }
+            }
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,17 +58,22 @@ class SignUpScreen : AppCompatActivity() {
                 ).addOnCompleteListener{
                     result->
                     if(result.isSuccessful){
-                        Toast.makeText(this@SignUpScreen,"Successfully Registered",Toast.LENGTH_SHORT).show()
                         user.name=binding.signupname.editText?.text.toString()
                         user.email=binding.signupemail.editText?.text.toString()
                         user.password=binding.signuppassword.editText?.text.toString()
-                        Firebase.firestore.collection("Users").document(Firebase.auth.currentUser!!.uid).set(user)
+                        Firebase.firestore.collection(USER_NODE).document(Firebase.auth.currentUser!!.uid).set(user).addOnSuccessListener {
+                        startActivity(Intent(this@SignUpScreen,HomeActivity::class.java))
+                        finish()
+                        }
                     }
                     else{
                         Toast.makeText(this@SignUpScreen, result.exception?.localizedMessage,Toast.LENGTH_SHORT).show()
                     }
                 }
             }
+        }
+        binding.plus.setOnClickListener{
+            launcher.launch("image/*")
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
