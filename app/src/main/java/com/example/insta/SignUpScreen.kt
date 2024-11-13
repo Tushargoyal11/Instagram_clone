@@ -2,6 +2,7 @@ package com.example.insta
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Html
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,9 +43,11 @@ class SignUpScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
+        val text="<font color=#FF000000>Already have an account?</font> <font color=#099BE9> Login</font>"
+        binding.Login.setText(Html.fromHtml(text))
         user=User()
 //      setContentView(R.layout.activity_sign_up_screen)
-        binding.signUpBtn.setOnClickListener{
+        binding.signUpbtn.setOnClickListener{
             if(binding.signupname.editText?.text.toString().equals("") or
                 binding.signupemail.editText?.text.toString().equals("") or
                 binding.signuppassword.editText?.text.toString().equals("")
@@ -74,6 +77,10 @@ class SignUpScreen : AppCompatActivity() {
         }
         binding.plus.setOnClickListener{
             launcher.launch("image/*")
+        }
+        binding.Login.setOnClickListener{
+            startActivity(Intent(this@SignUpScreen,LoginActivity::class.java))
+            finish()
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

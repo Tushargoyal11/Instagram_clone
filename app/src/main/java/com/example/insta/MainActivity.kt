@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +24,12 @@ class MainActivity : AppCompatActivity() {
        // window.statusBarColor= Color.TRANSPARENT //Here we making the splash screen's status bar color transparent but seems like there is no need for that
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this,SignUpScreen::class.java))
+            if(FirebaseAuth.getInstance().currentUser==null){
+                startActivity(Intent(this,SignUpScreen::class.java))
+            }
+            else{
+                startActivity(Intent(this,HomeActivity::class.java))
+            }
             finish() //here we are finishing the splash screen so that we cannot come back to it after pressing back button and we will get exit from the app
         },3000)
 
