@@ -18,6 +18,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
+import com.squareup.picasso.Picasso
 
 class SignUpScreen : AppCompatActivity() {
 
@@ -46,15 +48,48 @@ class SignUpScreen : AppCompatActivity() {
         val text="<font color=#FF000000>Already have an account?</font> <font color=#099BE9> Login</font>"
         binding.Login.setText(Html.fromHtml(text))
         user=User()
-//      setContentView(R.layout.activity_sign_up_screen)
-        binding.signUpbtn.setOnClickListener{
+        if(intent.hasExtra("MODE")){
+            if(intent.getIntExtra("MODE",-1)==1){
+
+                binding.signupbtn.text="Update Profile"
+                Firebase.firestore.collection(USER_NODE).document(Firebase.auth.currentUser!!.uid).get()
+                    .addOnSuccessListener {
+                        it->
+                        user=it.toObject<User>()!!
+                        if(!user.image.isNullOrEmpty()){
+                            Picasso.get().load(user.image).into(binding.profileImage)
+                        }
+                        binding.signupname.editText?.setText(user.name)
+                        binding.signupemail.editText?.setText(user.email)
+                        binding.signuppassword.editText?.setText(user.password)
+
+                    }
+            }
+        }
+
+
+
+        binding.signupbtn.setOnClickListener{
+            if(intent.hasExtra("MODE")){
+                if(intent.getIntExtra("MODE",-1)==1){
+                    Firebase.firestore.collection(USER_NODE)
+                        .document(Firebase.auth.currentUser!!.uid).set(user)
+                        .addOnSuccessListener {
+                            startActivity(Intent(this@SignUpScreen, HomeActivity::class.java))
+                            finish()
+                        }
+                }
+            }
+            else
+            {
             if(binding.signupname.editText?.text.toString().equals("") or
                 binding.signupemail.editText?.text.toString().equals("") or
                 binding.signuppassword.editText?.text.toString().equals("")
                 ) {
                     Toast.makeText(this@SignUpScreen,"Please fill all required fields", Toast.LENGTH_SHORT).show()
             }
-            else{
+            else
+            {
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(
                     binding.signupemail.editText?.text.toString(),
                     binding.signuppassword.editText?.text.toString()
@@ -74,7 +109,7 @@ class SignUpScreen : AppCompatActivity() {
                     }
                 }
             }
-        }
+        }}
         binding.plus.setOnClickListener{
             launcher.launch("image/*")
         }
